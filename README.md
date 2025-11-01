@@ -45,6 +45,14 @@ Advanced syntax highlighting and tooling for IndentScript in Neovim.
   - Built-in function completion
   - Smart completion based on context
 
+## Installation 
+
+# via vim-plug (Recommend)
+
+```
+Plug 'ilovecode17/indentscript.nvim'
+```
+
 ## File Structure
 
 ```
