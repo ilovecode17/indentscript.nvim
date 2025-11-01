@@ -59,8 +59,6 @@ indentscript.nvim/
 │   └── indentscript.vim
 ├── ftplugin/
 │   └── indentscript.vim
-├── autoload/
-│   └── indentscript.vim
 ├── doc/
 │   └── indentscript.txt
 └── README.md
