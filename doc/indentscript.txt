@@ -1,0 +1,405 @@
+*readme.txt*    INDENTSCRIPT.NVIM
+==============================================================================
+
+Advanced syntax highlighting and tooling for IndentScript in Neovim.
+
+
+FEATURES
+------------------------------------------------------------------------------
+*readme-features*
+
+- \1
+  - Python-style keywords (> \1 <, > \1 <, > \1 <, etc.)
+  - JavaScript keywords (> \1 <, > \1 <, > \1 <, etc.)
+  - F-strings with interpolation highlighting
+  - Template literals
+  - Decorators
+  - Built-in functions and methods
+  - Operators and delimiters
+  - Comments (single-line and multi-line)
+
+- \1
+  - Smart indentation based on context
+  - Proper handling of colons and blocks
+  - Tab/space conversion
+
+- \1
+  - One-command buffer formatting
+  - Configurable indent size
+  - Auto-format on save (optional)
+
+- \1
+  - Syntax error detection
+  - Indentation warnings
+  - Missing colons detection
+  - Auto-lint on save (optional)
+
+- \1
+  - Direct transpilation from Neovim
+  - Execute IndentScript files
+  - Real-time error reporting
+
+- \1
+  - Indent-based folding
+  - Function and class folding
+  - Configurable fold levels
+
+- \1
+  - Keyword completion
+  - Built-in function completion
+  - Smart completion based on context
+
+
+FILE STRUCTURE
+------------------------------------------------------------------------------
+*readme-file-structure*
+
+>
+    indentscript.nvim/
+    ├── plugin/
+    │   └── indentscript.vim
+    ├── ftdetect/
+    │   └── indentscript.vim
+    ├── syntax/
+    │   └── indentscript.vim
+    ├── indent/
+    │   └── indentscript.vim
+    ├── ftplugin/
+    │   └── indentscript.vim
+    ├── autoload/
+    │   └── indentscript.vim
+    ├── doc/
+    │   └── indentscript.txt
+    └── README.md
+<
+
+
+Create these files:
+
+\1
+>
+    autocmd BufNewFile,BufRead *.isc setfiletype indentscript
+<
+
+
+\1
+>
+    if exists("b:current_syntax")
+      finish
+    endif
+    
+    runtime! plugin/indentscript.vim
+    
+    let b:current_syntax = "indentscript"
+<
+
+
+\1
+>
+    if exists("b:did_indent")
+      finish
+    endif
+    let b:did_indent = 1
+    
+    setlocal indentexpr=GetIndentScriptIndent()
+    setlocal indentkeys+=0):,0],0},!^F,o,O,e
+    setlocal indentkeys-=0#
+    setlocal nosmartindent
+    
+    function! GetIndentScriptIndent()
+      let line = getline(v:lnum)
+      let prevline = getline(v:lnum - 1)
+      
+      if prevline =~ ':\s*$'
+        return indent(v:lnum - 1) + &sw
+      endif
+      
+      if line =~ '^\s*\(else\|elif\|except\|finally\):'
+        return indent(v:lnum - 1) - &sw
+      endif
+      
+      return indent(v:lnum - 1)
+    endfunction
+<
+
+
+\1
+>
+    if exists("b:did_ftplugin")
+      finish
+    endif
+    let b:did_ftplugin = 1
+    
+    setlocal commentstring=#%s
+    setlocal comments=:#
+    setlocal formatoptions-=t
+    setlocal formatoptions+=croql
+    setlocal suffixesadd=.isc
+    setlocal includeexpr=substitute(v:fname,'\\.','/','g')
+    
+    let b:undo_ftplugin = "setl cms< com< fo< sua< inex<"
+<
+
+
+
+CONFIGURATION
+------------------------------------------------------------------------------
+*readme-configuration*
+
+Basic Configuration
+
+Add to your > \1 < or > \1 <:
+
+\1
+>
+    let g:indentscript_indent_size = 4
+    let g:indentscript_auto_format = 0
+    let g:indentscript_auto_lint = 1
+    let g:indentscript_executable = 'node indentscript.js'
+<
+
+
+\1
+>
+    vim.g.indentscript_indent_size = 4
+    vim.g.indentscript_auto_format = false
+    vim.g.indentscript_auto_lint = true
+    vim.g.indentscript_executable = 'node indentscript.js'
+<
+
+
+Configuration Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| > \1 < | > \1 < | Number of spaces per indent level |
+| > \1 < | > \1 < | Auto-format on save |
+| > \1 < | > \1 < | Auto-lint on save |
+| > \1 < | > \1 < | Path to IndentScript executable |
+
+
+COMMANDS
+------------------------------------------------------------------------------
+*readme-commands*
+
+| Command | Description |
+|---------|-------------|
+| > \1 < | Format the current buffer |
+| > \1 < | Lint the current buffer |
+| > \1 < | Transpile to JavaScript |
+| > \1 < | Execute the current file |
+
+
+KEY MAPPINGS
+------------------------------------------------------------------------------
+*readme-key-mappings*
+
+Default key mappings (in > \1 < files):
+
+| Key | Command | Description |
+|-----|---------|-------------|
+| > \1 < | > \1 < | Format buffer |
+| > \1 < | > \1 < | Lint buffer |
+| > \1 < | > \1 < | Transpile to JS |
+| > \1 < | > \1 < | Execute file |
+
+Custom Mappings
+
+Add custom mappings to your config:
+
+>
+    autocmd FileType indentscript nnoremap <buffer> <F5> :ISCExecute<CR>
+    autocmd FileType indentscript nnoremap <buffer> <F6> :ISCTranspile<CR>
+    autocmd FileType indentscript nnoremap <buffer> <F7> :ISCFormat<CR>
+    autocmd FileType indentscript nnoremap <buffer> <F8> :ISCLint<CR>
+<
+
+
+
+USAGE EXAMPLES
+------------------------------------------------------------------------------
+*readme-usage-examples*
+
+Basic Workflow
+
+1. Create a new IndentScript file:
+>
+    :e myapp.isc
+<
+
+
+2. Write your code with syntax highlighting
+
+3. Format the code:
+>
+    :ISCFormat
+<
+
+
+4. Check for errors:
+>
+    :ISCLint
+<
+
+
+5. Transpile to JavaScript:
+>
+    :ISCTranspile
+<
+
+
+6. Or execute directly:
+>
+    :ISCExecute
+<
+
+
+Advanced Usage
+
+Enable auto-format and auto-lint:
+>
+    let g:indentscript_auto_format = 1
+    let g:indentscript_auto_lint = 1
+<
+
+
+Use custom IndentScript path:
+>
+    let g:indentscript_executable = '/usr/local/bin/indentscript'
+<
+
+
+
+SYNTAX HIGHLIGHTING EXAMPLES
+------------------------------------------------------------------------------
+*readme-syntax-highlighting-examples*
+
+Keywords
+>
+    def function_name(param):
+        if condition:
+            return value
+        else:
+            pass
+<
+
+
+Classes
+>
+    class MyClass:
+        def __init__(self, value):
+            this.value = value
+<
+
+
+F-Strings
+>
+    name = "Alice"
+    print(f"Hello, {name}!")
+<
+
+
+Async/Await
+>
+    async def fetch_data():
+        result = await api_call()
+        return result
+<
+
+
+Decorators
+>
+    @staticmethod
+    def static_method():
+        return "static"
+<
+
+
+
+TROUBLESHOOTING
+------------------------------------------------------------------------------
+*readme-troubleshooting*
+
+Syntax highlighting not working
+
+1. Check filetype:
+>
+    :set filetype?
+<
+
+
+Should return > \1 <
+
+2. Manually set filetype:
+>
+    :set filetype=indentscript
+<
+
+
+3. Reload syntax:
+>
+    :syntax clear
+    :syntax on
+<
+
+
+IndentScript executable not found
+
+Set the correct path:
+>
+    let g:indentscript_executable = '/path/to/indentscript'
+<
+
+
+Or add to PATH:
+>
+    export PATH=$PATH:/path/to/indentscript/directory
+<
+
+
+Indentation not working
+
+1. Check indent settings:
+>
+    :set indentexpr?
+    :set indentkeys?
+<
+
+
+2. Reset indentation:
+>
+    :set indentexpr=GetIndentScriptIndent()
+<
+
+
+
+INTEGRATION WITH LSP
+------------------------------------------------------------------------------
+*readme-integration-with-lsp*
+
+For enhanced features, integrate with Neovim's built-in LSP:
+
+>
+    require('lspconfig').indentscript.setup{
+      cmd = {'node', 'indentscript.js', '--lsp'},
+      filetypes = {'indentscript'},
+      root_dir = require('lspconfig').util.root_pattern('.git'),
+    }
+<
+
+
+
+CONTRIBUTING
+------------------------------------------------------------------------------
+*readme-contributing*
+
+Contributions are welcome! Please submit issues and pull requests on GitHub.
+
+
+LICENSE
+------------------------------------------------------------------------------
+*readme-license*
+
+MIT License
+---
+      
